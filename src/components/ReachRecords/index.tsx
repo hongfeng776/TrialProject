@@ -7,7 +7,7 @@ const reachTypeConfig: Record<ReachType, { label: string; icon: React.ReactNode;
   call: { label: '电话', icon: <Phone size={14} />, color: 'text-blue-600', bgColor: 'bg-blue-100' },
   email: { label: '邮件', icon: <Mail size={14} />, color: 'text-purple-600', bgColor: 'bg-purple-100' },
   meeting: { label: '会议', icon: <Users size={14} />, color: 'text-green-600', bgColor: 'bg-green-100' },
-  wechat: { label: '微信', icon: <MessageCircle size={14} />, color: 'text-emerald-600', bgColor: 'bg-emerald-100' },
+  wechat: { label: '企业微信', icon: <MessageCircle size={14} />, color: 'text-emerald-600', bgColor: 'bg-emerald-100' },
 };
 
 export function ReachRecords() {

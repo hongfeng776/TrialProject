@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CheckSquare, Plus, Calendar, Flag, X, ClipboardList } from 'lucide-react';
+import { CheckSquare, Plus, Calendar, Flag, X, ClipboardList, User } from 'lucide-react';
 import { useCustomer } from '../../context/CustomerContext';
 import type { Task, TaskPriority, TaskStatus } from '../../types';
 
@@ -23,6 +23,7 @@ export function Tasks() {
     description: '',
     priority: 'medium' as TaskPriority,
     dueDate: '',
+    assignee: '',
   });
 
   const detail = state.selectedCustomerDetail;
@@ -51,11 +52,12 @@ export function Tasks() {
       status: 'pending',
       dueDate: newTask.dueDate || new Date().toISOString().split('T')[0],
       priority: newTask.priority,
+      assignee: newTask.assignee || '当前用户',
       createdAt: new Date().toISOString().split('T')[0],
     };
 
     dispatch({ type: 'ADD_TASK', payload: task });
-    setNewTask({ title: '', description: '', priority: 'medium', dueDate: '' });
+    setNewTask({ title: '', description: '', priority: 'medium', dueDate: '', assignee: '' });
     setShowAddForm(false);
   };
 
@@ -112,7 +114,7 @@ export function Tasks() {
                 <select
                   value={newTask.priority}
                   onChange={(e) => setNewTask({ ...newTask, priority: e.target.value as TaskPriority })}
-                  className="px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500"
+                  className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500"
                 >
                   <option value="high">高优先级</option>
                   <option value="medium">中优先级</option>
@@ -122,7 +124,14 @@ export function Tasks() {
                   type="date"
                   value={newTask.dueDate}
                   onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
-                  className="px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500"
+                  className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500"
+                />
+                <input
+                  type="text"
+                  placeholder="负责人"
+                  value={newTask.assignee}
+                  onChange={(e) => setNewTask({ ...newTask, assignee: e.target.value })}
+                  className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500"
                 />
               </div>
               <button
@@ -167,6 +176,10 @@ export function Tasks() {
                     <div className="flex items-center gap-3">
                       <span className={`text-xs ${statusConfig[task.status].color}`}>
                         {statusConfig[task.status].label}
+                      </span>
+                      <span className="text-xs text-slate-400 flex items-center gap-1">
+                        <User size={12} />
+                        {task.assignee}
                       </span>
                       <span className="text-xs text-slate-400 flex items-center gap-1">
                         <Calendar size={12} />
