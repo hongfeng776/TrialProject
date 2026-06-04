@@ -14,9 +14,13 @@ export interface Customer {
 }
 
 export interface HealthDimension {
+  key: string;
   name: string;
   score: number;
   weight: number;
+  icon: string;
+  description: string;
+  trend: 'up' | 'down' | 'stable';
 }
 
 export interface ScoreTrend {
