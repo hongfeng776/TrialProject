@@ -1,4 +1,4 @@
-import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
+import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { TrendingDown, TrendingUp, Minus, Activity, Zap, RefreshCw, Headphones, MessageSquare, TrendingUp as Value } from 'lucide-react';
 import { useCustomer } from '../../context/CustomerContext';
 

@@ -1,4 +1,4 @@
-import { Search, Users, AlertTriangle, AlertCircle, TrendingDown, TrendingUp } from 'lucide-react';
+import { Search, Users, AlertTriangle } from 'lucide-react';
 import { useCustomer } from '../../context/CustomerContext';
 import type { HealthLevel } from '../../types';
 

@@ -1,12 +1,24 @@
 import type { Customer, CustomerDetail, HealthDimension, ScoreTrend, Task, ReachRecord, RiskRule } from '../types';
 
+export function calcHealthScore(dimensions: HealthDimension[]): number {
+  return Math.round(
+    dimensions.reduce((sum, d) => sum + d.score * d.weight, 0)
+  );
+}
+
+export function calcHealthLevel(score: number): 'high-risk' | 'medium-risk' | 'healthy' {
+  if (score < 50) return 'high-risk';
+  if (score < 75) return 'medium-risk';
+  return 'healthy';
+}
+
 export const customers: Customer[] = [
   {
     id: '1',
     name: '张伟',
     company: '星辰科技有限公司',
     avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=100&h=100',
-    healthScore: 35,
+    healthScore: 0,
     healthLevel: 'high-risk',
     lastContact: '2024-01-15',
     contractValue: 500000,
@@ -18,7 +30,7 @@ export const customers: Customer[] = [
     name: '李娜',
     company: '云帆互联网技术',
     avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100&h=100',
-    healthScore: 62,
+    healthScore: 0,
     healthLevel: 'medium-risk',
     lastContact: '2024-01-20',
     contractValue: 320000,
@@ -30,7 +42,7 @@ export const customers: Customer[] = [
     name: '王强',
     company: '智造未来集团',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100&h=100',
-    healthScore: 88,
+    healthScore: 0,
     healthLevel: 'healthy',
     lastContact: '2024-01-28',
     contractValue: 1200000,
@@ -42,7 +54,7 @@ export const customers: Customer[] = [
     name: '陈静',
     company: '智慧零售股份',
     avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=100&h=100',
-    healthScore: 45,
+    healthScore: 0,
     healthLevel: 'high-risk',
     lastContact: '2024-01-10',
     contractValue: 280000,
@@ -54,7 +66,7 @@ export const customers: Customer[] = [
     name: '刘洋',
     company: '数据洞察科技',
     avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=100&h=100',
-    healthScore: 70,
+    healthScore: 0,
     healthLevel: 'medium-risk',
     lastContact: '2024-01-25',
     contractValue: 450000,
@@ -66,7 +78,7 @@ export const customers: Customer[] = [
     name: '赵敏',
     company: '绿色能源科技',
     avatar: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&q=80&w=100&h=100',
-    healthScore: 92,
+    healthScore: 0,
     healthLevel: 'healthy',
     lastContact: '2024-01-30',
     contractValue: 890000,
@@ -126,42 +138,36 @@ const scoreTrendMap: Record<string, ScoreTrend[]> = {
     { date: '2023-10', score: 62 },
     { date: '2023-11', score: 55 },
     { date: '2023-12', score: 45 },
-    { date: '2024-01', score: 35 },
   ],
   '2': [
     { date: '2023-09', score: 70 },
     { date: '2023-10', score: 68 },
     { date: '2023-11', score: 65 },
     { date: '2023-12', score: 63 },
-    { date: '2024-01', score: 62 },
   ],
   '3': [
     { date: '2023-09', score: 82 },
     { date: '2023-10', score: 84 },
     { date: '2023-11', score: 86 },
     { date: '2023-12', score: 87 },
-    { date: '2024-01', score: 88 },
   ],
   '4': [
     { date: '2023-09', score: 72 },
     { date: '2023-10', score: 65 },
     { date: '2023-11', score: 58 },
     { date: '2023-12', score: 50 },
-    { date: '2024-01', score: 45 },
   ],
   '5': [
     { date: '2023-09', score: 65 },
     { date: '2023-10', score: 67 },
     { date: '2023-11', score: 69 },
     { date: '2023-12', score: 68 },
-    { date: '2024-01', score: 70 },
   ],
   '6': [
     { date: '2023-09', score: 88 },
     { date: '2023-10', score: 89 },
     { date: '2023-11', score: 90 },
     { date: '2023-12', score: 91 },
-    { date: '2024-01', score: 92 },
   ],
 };
 
@@ -429,10 +435,24 @@ export function getCustomerDetail(customerId: string): CustomerDetail | null {
   const customer = customers.find(c => c.id === customerId);
   if (!customer) return null;
 
+  const healthDimensions = healthDimensionsMap[customerId] || [];
+  const computedScore = calcHealthScore(healthDimensions);
+  const computedLevel = calcHealthLevel(computedScore);
+
+  const baseTrend = scoreTrendMap[customerId] || [];
+  const scoreTrend = [
+    ...baseTrend,
+    { date: '2024-01', score: computedScore },
+  ];
+
   return {
-    customer,
-    healthDimensions: healthDimensionsMap[customerId] || [],
-    scoreTrend: scoreTrendMap[customerId] || [],
+    customer: {
+      ...customer,
+      healthScore: computedScore,
+      healthLevel: computedLevel,
+    },
+    healthDimensions,
+    scoreTrend,
     tasks: tasksMap[customerId] || [],
     reachRecords: reachRecordsMap[customerId] || [],
     riskRules: riskRulesMap[customerId] || [],

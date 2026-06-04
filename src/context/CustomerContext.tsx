@@ -2,6 +2,16 @@ import React, { createContext, useContext, useReducer, ReactNode } from 'react';
 import { customers, getCustomerDetail } from '../data/mockData';
 import type { Customer, CustomerDetail, Task, ReachRecord } from '../types';
 
+function buildComputedCustomers(): Customer[] {
+  return customers.map(c => {
+    const detail = getCustomerDetail(c.id);
+    if (!detail) return c;
+    return detail.customer;
+  });
+}
+
+const computedCustomers = buildComputedCustomers();
+
 interface State {
   customers: Customer[];
   selectedCustomerId: string | null;
@@ -23,7 +33,7 @@ type Action =
 function buildInitialStores(): { tasksStore: Record<string, Task[]>; recordsStore: Record<string, ReachRecord[]> } {
   const tasksStore: Record<string, Task[]> = {};
   const recordsStore: Record<string, ReachRecord[]> = {};
-  for (const c of customers) {
+  for (const c of computedCustomers) {
     const detail = getCustomerDetail(c.id);
     if (detail) {
       tasksStore[c.id] = [...detail.tasks];
@@ -50,9 +60,9 @@ function buildDetail(
 }
 
 const initialState: State = {
-  customers,
-  selectedCustomerId: customers[0]?.id || null,
-  selectedCustomerDetail: customers[0] ? buildDetail(customers[0].id, initTasksStore, initRecordsStore) : null,
+  customers: computedCustomers,
+  selectedCustomerId: computedCustomers[0]?.id || null,
+  selectedCustomerDetail: computedCustomers[0] ? buildDetail(computedCustomers[0].id, initTasksStore, initRecordsStore) : null,
   tasksStore: initTasksStore,
   recordsStore: initRecordsStore,
   filterLevel: 'all',
